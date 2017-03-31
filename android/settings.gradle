@@ -1,0 +1,3 @@
+rootProject.name = 'textables'
+
+include ':app'
