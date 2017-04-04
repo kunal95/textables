@@ -1,20 +1,30 @@
 import React, { Component } from 'react';
 import {
   AppRegistry,Clipboard ,
-  StyleSheet,TouchableNativeFeedback,
-  Text,Image,ScrollView,
+  StyleSheet,TouchableOpacity,
+  Text,Image,ScrollView,AsyncStorage,
   View,Dimensions,ToastAndroid 
 } from 'react-native';
 var randomColor=require('randomcolor')
 var {height, width} = Dimensions.get('window');
 const colors=["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#ecf0f1", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
 export default class textables extends Component {
+  constructor(props){
+    super(props)
+    this.state={fav:[]}
+    AsyncStorage.getItem("fav").then(favs=>{
+        if(favs){
+          this.state.fav=JSON.parse(favs);
+          this.setState(this.state);
+        }
+      })
+  }
   render() {
     return (
       <View style={{height:height,width:width,backgroundColor:'black'}}>
           <Text style={{color:'white',fontFamily:'sans-serif-thin',fontSize:16,textAlign:'center',padding:5}}>{'↓ Scroll & Tap ↓'}</Text>
         <ScrollView>
-          {content.map(function(data){
+          {content.map(function(data,i){
             return(
               <View key={data.category}>
               <View style={{height:30,marginRight:10,marginLeft:10,backgroundColor:'transparent',paddingLeft:20,justifyContent:'center'}}>
@@ -24,12 +34,18 @@ export default class textables extends Component {
                {data.items.map(function(item){
                 return(
                   <View key={item.name} style={{padding:10,height:140,width:(item.art.length>10)?width-25:width/2-15,marginBottom:5,marginRight:5,backgroundColor:randomColor({luminosity: 'light'}),justifyContent:'center',alignItems:'center'}}>
-                  <TouchableNativeFeedback onPress={()=>{Clipboard.setString(item.art);ToastAndroid.show('Copied '+item.name, ToastAndroid.SHORT)}}>
+                    <View style={{height:10,width:10,backgroundColor:'yellow',position:'absolute',top:0,right:0}}>
+                      <Image source={require('./assets/star-icon.png')}/>
+                    </View>
+                  <TouchableOpacity 
+                    delayLongPress={500} 
+                    onLongPress ={(e)=>{AsyncStorage.setItem('fav', this.state.fav.push(item))}} 
+                    onPress={(e)=>{Clipboard.setString(item.art);ToastAndroid.show('Copied '+item.name, ToastAndroid.SHORT)}}>
                     <View style={{justifyContent:'center',alignItems:'center'}}>
                       <Text style={{color:'black',fontFamily:'sans-serif-condensed',fontSize:20,fontWeight:'bold'}}>{item.art}</Text>
                       <Text style={{color:'rgba(0,0,0,0.5)',fontFamily:'sans-serif-thin',fontSize:15,fontWeight:'100'}}>{item.name}</Text>
                     </View>
-                  </TouchableNativeFeedback>
+                  </TouchableOpacity>
                   </View>)
               })}
                 </View>
