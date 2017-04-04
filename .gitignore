@@ -51,3 +51,4 @@ buck-out/
 .vscode/typings/react/react-addons-update.d.ts
 .vscode/typings/react/react-global.d.ts
 
+*.keystore
